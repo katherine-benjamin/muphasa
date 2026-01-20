@@ -1215,6 +1215,8 @@ CompressedLandscape computeCompressedLandscape(std::vector<SignatureColumn>& pre
     
     /* Main algorithm that iterates through the index set */
     int column_index;
+
+    /* This is the highest pivot of any syzygy in the presentation */
     index_t max_pivot=0;
     for(auto& column : presentation){
         if(max_pivot < column.get_pivot_index()){
@@ -1224,6 +1226,7 @@ CompressedLandscape computeCompressedLandscape(std::vector<SignatureColumn>& pre
     for(size_t i=0; i<=max_pivot; i++){
         grade_lists.push_back(std::vector<grade_t>());
     }
+    /* Insert a single copy of each grade into the list of grades */
     for(auto& column : presentation){
         if(visited_grades.find(column.grade) == visited_grades.end()){
             grades.push(column.grade);
@@ -1247,9 +1250,11 @@ CompressedLandscape computeCompressedLandscape(std::vector<SignatureColumn>& pre
         landscape.push_back(std::pair<grade_t, std::vector<grade_t>>(row_grades[i], std::vector<grade_t>()));
     }
     
+    /* Go through each grade */
     while(!grades.empty()){
         grade_t v = grades.top();
         grades.pop();
+        /* This should never trigger since the grades are unique by design? */
         while(v == grades.top()){
             grades.pop();
         }
@@ -3960,6 +3965,7 @@ GradedMatrix presentation_FIrep(std::vector<std::vector<int>>& high_matrix, std:
     return graded_matrix;
 }
 
+
 GradedMatrix presentation_dm(std::vector<std::vector<std::vector<input_t>>>& distance_matrices, std::vector<input_t>& max_metric_values, std::vector<std::vector<input_t>>& filters, int hom_dim){
     std::pair<Matrix, Matrix> boundary_matrices = compute_boundary_matrices_dm(distance_matrices, max_metric_values, filters, hom_dim);
     verify_kernel(boundary_matrices.first, boundary_matrices.second);
@@ -4272,7 +4278,6 @@ void critical_points_geometric_pres(){
 
 
 /* Input */
-
 void print_usage_and_exit(int exit_code) {
     std::cerr
     << "Usage: "
